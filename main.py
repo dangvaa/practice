@@ -39,7 +39,8 @@ class ImageProcessingApp(QMainWindow):
         open_image_button.clicked.connect(self.open_image)
         layout.addWidget(open_image_button)
 
-        capture_webcam_button = QPushButton("Сделать снимок с веб-камеры", self)
+        capture_webcam_button = QPushButton("Сделать снимок с веб-камеры",
+                                            self)
         capture_webcam_button.clicked.connect(self.capture_from_webcam)
         layout.addWidget(capture_webcam_button)
 
@@ -47,7 +48,8 @@ class ImageProcessingApp(QMainWindow):
         show_red_channel_button.clicked.connect(lambda: self.show_channel(2))
         layout.addWidget(show_red_channel_button)
 
-        show_green_channel_button = QPushButton("Показать зеленый канал", self)
+        show_green_channel_button = QPushButton("Показать зеленый канал",
+                                                self)
         show_green_channel_button.clicked.connect(lambda: self.show_channel(1))
         layout.addWidget(show_green_channel_button)
 
@@ -55,15 +57,19 @@ class ImageProcessingApp(QMainWindow):
         show_blue_channel_button.clicked.connect(lambda: self.show_channel(0))
         layout.addWidget(show_blue_channel_button)
 
-        show_negative_button = QPushButton("Показать негативное изображение", self)
+        show_negative_button = QPushButton("Показать негативное изображение",
+                                           self)
         show_negative_button.clicked.connect(self.show_negative)
         layout.addWidget(show_negative_button)
 
-        apply_gaussian_blur_button = QPushButton("Сделать размытие изображения по Гауссу", self)
+        apply_gaussian_blur_button = QPushButton(
+            "Сделать размытие изображения по Гауссу", self)
         apply_gaussian_blur_button.clicked.connect(self.apply_gaussian_blur)
         layout.addWidget(apply_gaussian_blur_button)
 
-        draw_red_circle_button = QPushButton("Нарисовать круг на изображении красным цветом", self)
+        draw_red_circle_button = QPushButton(
+            "Нарисовать круг на изображении красным цветом",
+            self)
         draw_red_circle_button.clicked.connect(self.draw_red_circle)
         layout.addWidget(draw_red_circle_button)
 
@@ -89,7 +95,8 @@ class ImageProcessingApp(QMainWindow):
         if file_path:
             self.cv_image = cv2.imread(file_path)
             if self.cv_image is None:
-                QMessageBox.critical(self, "Ошибка", "Ошибка при загрузке изображения")
+                QMessageBox.critical(self, "Ошибка",
+                                     "Ошибка при загрузке изображения")
             else:
                 self.display_image(self.cv_image)
 
@@ -164,7 +171,8 @@ class ImageProcessingApp(QMainWindow):
         )
         if ok:
             if kernel_size % 2 == 0:
-                QMessageBox.warning(self, "Предупреждение", "Введите нечетное число")
+                QMessageBox.warning(self, "Предупреждение",
+                                    "Введите нечетное число")
                 return
 
             blurred_image = cv2.GaussianBlur(
@@ -177,26 +185,32 @@ class ImageProcessingApp(QMainWindow):
             QMessageBox.warning(self, "Предупреждение", "Изображения нет")
             return
 
-        x, ok = QInputDialog.getInt(self, "Красный круг", "Введите координату x:")
-        if not ok:
-            return
-
-        y, ok = QInputDialog.getInt(self, "Красный круг", "Введите координату y:")
-        if not ok:
-            return
-
-        radius, ok = QInputDialog.getInt(self, "Красный круг", "Введите радиус:")
-        if not ok:
-            return
-
         h, w, _ = self.cv_image.shape
+        coord_info = f"Диапазон координат: x [0, {w - 1}], y [0, {h - 1}]"
+
+        x, ok = QInputDialog.getInt(self, "Красный круг",
+                                    f"{coord_info}\nВведите координату x:")
+        if not ok:
+            return
+
+        y, ok = QInputDialog.getInt(self, "Красный круг",
+                                    f"{coord_info}\nВведите координату y:")
+        if not ok:
+            return
+
+        radius, ok = QInputDialog.getInt(self, "Красный круг",
+                                         "Введите радиус:")
+        if not ok:
+            return
 
         if x < 0 or x >= w or y < 0 or y >= h:
-            QMessageBox.warning(self, "Предупреждение", "Круг выходит за пределы изображения")
+            QMessageBox.warning(self, "Предупреждение",
+                                "Круг выходит за пределы изображения")
             return
 
         if radius <= 0 or radius > min(w, h):
-            QMessageBox.warning(self, "Предупреждение", "Неверный радиус круга")
+            QMessageBox.warning(self, "Предупреждение",
+                                "Неверный радиус круга")
             return
 
         circled_image = self.cv_image.copy()
