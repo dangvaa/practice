@@ -1,3 +1,4 @@
-1) Создать виртуальное окружение: conda create --name env --file requirements.txt
+1) Создать виртуальное окружение: conda create --name env python=3.8
 2) Активировать виртуальное окружение: conda activate env
-3) Запустить приложение: python main.py
+3) Установить необходимые библиотеки: pip install -r requirements.txt
+4) Запустить приложение: python main.py 
