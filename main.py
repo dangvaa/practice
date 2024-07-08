@@ -1,3 +1,4 @@
+"""Приложение для работы с изображениями"""
 import sys
 import cv2
 import numpy as np
@@ -89,6 +90,7 @@ class ImageProcessingApp(QMainWindow):
         draw_red_circle_button.setStyleSheet(style_sheet)
 
     def open_image(self):
+        """Открывает изображение на устройстве"""
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Открыть изображение", "", "(*.png *.jpg *.bmp)"
         )
@@ -101,6 +103,7 @@ class ImageProcessingApp(QMainWindow):
                 self.display_image(self.cv_image)
 
     def capture_from_webcam(self):
+        """Захват изображения с веб-камеры"""
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             QMessageBox.critical(
@@ -121,6 +124,7 @@ class ImageProcessingApp(QMainWindow):
             self.display_image(self.cv_image)
 
     def display_image(self, cv_image):
+        """Функция для отображения изображения в приложении"""
         rgb_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
@@ -136,10 +140,12 @@ class ImageProcessingApp(QMainWindow):
         self.image_label.adjustSize()
 
     def resizeEvent(self, event):
+        """Подгоняет размер изображения для приложения"""
         if self.cv_image is not None:
             self.display_image(self.cv_image)
 
     def show_channel(self, channel):
+        """Отображает выбранный цветовой канал"""
         if self.cv_image is None:
             QMessageBox.warning(self, "Предупреждение", "Изображения нет")
             return
@@ -149,6 +155,7 @@ class ImageProcessingApp(QMainWindow):
         self.display_image(channel_image)
 
     def show_negative(self):
+        """Отображает негативное изображение"""
         if self.cv_image is None:
             QMessageBox.warning(self, "Предупреждение", "Изображения нет")
             return
@@ -157,6 +164,7 @@ class ImageProcessingApp(QMainWindow):
         self.display_image(negative_image)
 
     def apply_gaussian_blur(self):
+        """Делает размытие по Гауссу"""
         if self.cv_image is None:
             QMessageBox.warning(self, "Предупреждение", "Изображения нет")
             return
@@ -181,6 +189,7 @@ class ImageProcessingApp(QMainWindow):
             self.display_image(blurred_image)
 
     def draw_red_circle(self):
+        """Рисует красный круг на изображении"""
         if self.cv_image is None:
             QMessageBox.warning(self, "Предупреждение", "Изображения нет")
             return
@@ -192,25 +201,37 @@ class ImageProcessingApp(QMainWindow):
                                     f"{coord_info}\nВведите координату x:")
         if not ok:
             return
+        if x < 0:
+            QMessageBox.warning(self, "Ошибка",
+                                "Вводите положительные числа")
+            return
 
         y, ok = QInputDialog.getInt(self, "Красный круг",
                                     f"{coord_info}\nВведите координату y:")
         if not ok:
+            return
+        if y < 0:
+            QMessageBox.warning(self, "Ошибка",
+                                "Вводите положительные числа")
             return
 
         radius, ok = QInputDialog.getInt(self, "Красный круг",
                                          "Введите радиус:")
         if not ok:
             return
+        if radius <= 0:
+            QMessageBox.warning(self, "Ошибка",
+                                "Вводите положительные числа")
+            return
 
-        if x < 0 or x >= w or y < 0 or y >= h:
+        if x >= w or y >= h:
             QMessageBox.warning(self, "Предупреждение",
                                 "Круг выходит за пределы изображения")
             return
 
-        if radius <= 0 or radius > min(w, h):
+        if radius > min(w, h):
             QMessageBox.warning(self, "Предупреждение",
-                                "Неверный радиус круга")
+                                f"Максимальный радиус: {min(w,h)}")
             return
 
         circled_image = self.cv_image.copy()
